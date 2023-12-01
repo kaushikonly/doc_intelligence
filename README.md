@@ -6,27 +6,27 @@ This repository contains a suite of document parsing tools aimed at streamlining
 
 ### Deskew
 
-Corrects skewed document images to ensure proper alignment and readability.
+- Corrects skewed document images to ensure proper alignment and readability.
 
 ### Dewarp
 
-Removes distortions and warping effects from document images, improving visual quality.
+- Removes distortions and warping effects from document images, improving visual quality.
 
 ### Line Remover
 
-Eliminates unnecessary lines from documents, enhancing clarity and focus.
+- Eliminates unnecessary lines from documents, enhancing clarity and focus.
 
 ### Shadow Remover
 
-Efficiently removes shadows and shading effects from document images for improved visibility.
+- Efficiently removes shadows and shading effects from document images for improved visibility.
 
 ### Table Extraction
 
-Facilitates the extraction of tables from documents, enabling structured data retrieval.
+- Facilitates the extraction of tables from documents, enabling structured data retrieval.
 
 ### Document Question Answering
 
-Utilizes a powerful question-answering model to extract relevant information from documents based on queries.
+- Utilizes a powerful question-answering model to extract relevant information from documents based on queries.
 
 ### Handwritten Text Extraction
 
