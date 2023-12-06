@@ -1,5 +1,5 @@
 import gradio as gr
-from doc_pre_processor import Doc_Preprocessor
+from doc_intelligence.transform.doc_pre_processor import Doc_Preprocessor
 
 def image_processor(image, processing_technique):
 
