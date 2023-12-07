@@ -30,6 +30,8 @@ paddle.utils.run_check()
 
 
 
+
+
 class Text_Manipulation():
 
     def extract_txt(self, bounding_boxes):
