@@ -3,18 +3,22 @@ import cv2
 import json
 import math
 import PIL
+import copy
 import jellyfish
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# from ml.src.utils.helper.load_images import load_images_functions
-from doc_transform.model.ocr.paddleocr import Paddle_OCR
+from doc_intelligence.model.ocr.paddleocr import Paddle_OCR
 
 class Doc_Preprocessor:
 
     """
-    
+    Containts the following document processing techniqes, 
+    - Deskew
+    - Shadow Remover
+    - Line Remover
+    - Dewarp 
     
     """
 
@@ -22,13 +26,13 @@ class Doc_Preprocessor:
 
         self.paddleocr_model = Paddle_OCR()
 
-    def skew_calculate(self, flat_result : list):
+    def __skew_calculate(self, coor_list : list):
 
         """
         Compute the slope of the bounding boxes and return the median value 
 
         Args: 
-            flat_result: List of words along with the 4 coordinates of the bounding boxes
+            coor_list (list): List of list where each element contains 4 coordinates of the bounding box
         Returns: 
             Mean or median value of the slop of the all the bounding boxes
         
@@ -36,8 +40,8 @@ class Doc_Preprocessor:
 
         angle_all = []
 
-        for ind in range(len(flat_result)):
-            box_coord = np.array(flat_result[ind][0])
+        for ind in range(len(coor_list)):
+            box_coord = np.array(coor_list[ind])
             box_xcoord = box_coord[0:4, 0]
             box_ycoord = box_coord[0:4, 1]
 
@@ -61,49 +65,22 @@ class Doc_Preprocessor:
         Deskew the image using the slop of the bouding boxes 
 
         Args: 
-            image_path: path of the image
+            image_path (str): path of the image
         Returns: 
             Deskewed PIL image
         
         """
-        # TODO: add documentation (nbdev)
-        # add stong typing
 
         image = Image.open(image_path).convert('RGB')
         flat_results = self.paddleocr_model.apply_ocr(image_path)
 
-        self.angle_correction =  self.skew_calculate(flat_results)
+        self.angle_correction =  self.__skew_calculate([value[0] for value in flat_results])
 
         images_corrected = image.rotate(
             self.angle_correction, resample=Image.BICUBIC, expand=True
         )
 
         return images_corrected
-
-    # def deskew(self, img_path, angle_all, counter):
-
-    #     img_rotated = Image.open(img_path)
-    #     if abs((np.round(np.median(angle_all)))) == 0:
-    #         angle_correction = np.round(np.mean(angle_all))
-    #     else:
-    #         angle_correction = np.round(np.median(angle_all))
-
-    #     images_corrected = img_rotated.rotate(
-    #         angle_correction, resample=Image.BICUBIC, expand=True
-    #     )
-
-    #     images_corrected = images_corrected.convert("RGB")
-
-    #     filepath = "/data/app/table_ocr/"
-
-    #     filename = "Corrected_Result_" + str(counter) + ".jpg"
-    #     full_filepath_name = os.path.join(filepath, filename)
-    #     images_corrected.save(full_filepath_name)
-    #     Load_img = load_images_functions()
-
-    #     img = Load_img.load_images_from_folder(full_filepath_name)
-
-    #     return img
 
     def shadow_remove(self, image_path: str) -> PIL.Image:
         """ Remove the shadow from the document image
@@ -134,111 +111,64 @@ class Doc_Preprocessor:
         color_converted = cv2.cvtColor(img_shadow_removed, cv2.COLOR_BGR2RGB)
         return Image.fromarray(color_converted)
 
-    # def shadow_remove(self, img):
-    #     rgb_planes = cv2.split(img)
-    #     result_norm_planes = []
-    #     for plane in rgb_planes:
-    #         dilated_img = cv2.dilate(plane, np.ones((7, 7), np.uint8))
-    #         bg_img = cv2.medianBlur(dilated_img, 21)
-    #         diff_img = 255 - cv2.absdiff(plane, bg_img)
-    #         norm_img = cv2.normalize(
-    #             diff_img,
-    #             None,
-    #             alpha=0,
-    #             beta=255,
-    #             norm_type=cv2.NORM_MINMAX,
-    #             dtype=cv2.CV_8UC1,
-    #         )
-    #         result_norm_planes.append(norm_img)
-    #     shadowremov = cv2.merge(result_norm_planes)
-    #     return shadowremov
+    def remove_horz_verti_lines(self, image_path: str, vh_thresh : int = 200, hoiz_line: bool = True, verti_line: bool= False) -> PIL.Image:
 
-    def identify_horz_vertical(self, img, shadowless_vh):
-        if len(img.shape) != 2:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # read image using cv2 
+        image = cv2.imread(image_path)
+
+        if len(image.shape) != 2:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         else:
-            gray = img
-        # Show gray image
-        gray_pil = Image.fromarray(gray)
-        gray_pil.show()
+            gray = copy.deepcopy(image)
 
         # Apply adaptiveThreshold at the bitwise_not of gray, notice the ~ symbol
         gray = cv2.bitwise_not(gray)
         bw = cv2.adaptiveThreshold(
             gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2
         )
-        # Show binary image
-        plt.imshow(bw)
-        plt.show()
 
-        horizontal = np.copy(bw)
-        vertical = np.copy(bw)
+        if hoiz_line:
+            horizontal = np.copy(bw)
 
-        cols = horizontal.shape[1]
-        horizontal_size = cols // 30
-        # Create structure element for extracting horizontal lines through morphology operations
-        horizontalStructure = cv2.getStructuringElement(
-            cv2.MORPH_RECT, (horizontal_size, 1)
-        )
-        # Apply morphology operations
-        horizontal = cv2.erode(horizontal, horizontalStructure)
-        horizontal = cv2.dilate(horizontal, horizontalStructure)
-        # Show extracted horizontal lines
-        plt.imshow(horizontal)
-        plt.show()
+            cols = horizontal.shape[1]
+            horizontal_size = cols // 30
 
-        # Specify size on vertical axis
-        rows = vertical.shape[0]
-        verticalsize = rows // 30
-        # Create structure element for extracting vertical lines through morphology operations
-        verticalStructure = cv2.getStructuringElement(
-            cv2.MORPH_RECT, (1, verticalsize)
-        )
-        # Apply morphology operations
-        vertical = cv2.erode(vertical, verticalStructure)
-        vertical = cv2.dilate(vertical, verticalStructure)
-        # Show extracted vertical lines
-        plt.imshow(vertical)
+            # Create structure element for extracting horizontal lines through morphology operations
+            horizontalStructure = cv2.getStructuringElement(
+                cv2.MORPH_RECT, (horizontal_size, 1)
+            )
+            # Apply morphology operations
+            horizontal = cv2.erode(horizontal, horizontalStructure)
+            horizontal = cv2.dilate(horizontal, horizontalStructure)
 
-        with open(
-            "/home/nhadmin/users/sudarshan/nha_project/configs/OT_notes/handwritten_ocr_config.json",
-            "r",
-        ) as config:
-            thresh_config = json.load(config)
+        if verti_line: 
+            vertical = np.copy(bw)
 
-        vh_thresh = thresh_config["threshold"]["vh"][0]
+            # Specify size on vertical axis
+            rows = vertical.shape[0]
+            verticalsize = rows // 30
+
+            # Create structure element for extracting vertical lines through morphology operations
+            verticalStructure = cv2.getStructuringElement(
+                cv2.MORPH_RECT, (1, verticalsize)
+            )
+            # Apply morphology operations
+            vertical = cv2.erode(vertical, verticalStructure)
+            vertical = cv2.dilate(vertical, verticalStructure)
 
         shadowless_vh = cv2.cvtColor(
-            shadowless_vh, cv2.COLOR_BGR2GRAY
-        )  # gray scale image
+            image, cv2.COLOR_BGR2GRAY
+        ) 
+
         shadowless_vh[shadowless_vh > vh_thresh] = 255
         shadowless_vh[shadowless_vh <= vh_thresh] = 0
-        shadowless_vh_pil = Image.fromarray(shadowless_vh)
-        shadowless_vh_pil.show()
-
-        vertical_pil = Image.fromarray(vertical)
-        vertical_pil.show()
-
-        horizontal_pil = Image.fromarray(horizontal)
-        horizontal_pil.show()
-
         shadowless_vh_inv = np.invert(shadowless_vh)
-        shadowless_vh_inv_pil = Image.fromarray(shadowless_vh_inv)
-        shadowless_vh_inv_pil.show()
 
-        vh = vertical + horizontal
-        vh_pil = Image.fromarray(vh)
-        vh_pil.show()
+        shadowless_vhless_inv = shadowless_vh_inv - horizontal if hoiz_line else shadowless_vh_inv
+        shadowless_vhless_inv = shadowless_vh_inv - vertical if verti_line else shadowless_vh_inv
+        shadowless_vhless_pil = Image.fromarray(np.invert(shadowless_vhless_inv))
 
-        return horizontal, vertical, shadowless_vh, shadowless_vh_inv
-
-    def border_remove(self, shadowless_vh_inv, horizontal, vertical):
-        shadowless_vhless_inv = shadowless_vh_inv - horizontal - vertical
-        shadowless_vhless_inv_pil = Image.fromarray(shadowless_vhless_inv)
-        shadowless_vhless_inv_pil.show()
-        # shadowless_vhless_inv_pil.save('/data/user/sudarshan/data/ot_data/ot_save/pass1.jpg')
-
-        return shadowless_vhless_inv
+        return shadowless_vhless_pil
 
     def image_crop(self, shadowless_vhless_inv):
         shadowless_vhless_inv_sum_y = np.sum(shadowless_vhless_inv, axis=0)
@@ -357,36 +287,3 @@ class Doc_Preprocessor:
         im_top.show()
 
         return img, full_filepath, im_top, full_filepath_top
-
-    
-    def segmentation(self, center_coord):
-        X_diff = []
-        Y_diff = []
-        X_coord = []
-        Y_coord = []
-        X_mid_all = []
-        Y_mid_all = []
-
-        for i, box_coordi in enumerate(center_coord):
-            X_mid_all.append(np.squeeze(box_coordi)[0])
-            Y_mid_all.append(np.squeeze(box_coordi)[1])
-
-            if i == 0:
-                store_prev = np.squeeze(box_coordi)
-            else:
-                x_diff = np.squeeze(box_coordi)[0] - store_prev[0]
-                y_diff = np.squeeze(box_coordi)[1] - store_prev[1]
-
-                X_diff.append(x_diff)
-                Y_diff.append(y_diff)
-                X_coord.append(np.squeeze(box_coordi)[0])
-                Y_coord.append(np.squeeze(box_coordi)[1])
-
-                store_prev = np.squeeze(box_coordi)
-
-        return X_coord, Y_coord, X_mid_all, Y_mid_all
-
-
-obj = Doc_Preprocessor()
-deskewed_img = obj.deskew_image('/Users/nevilvekariya/work/project/NHA/transform/data/deskew/img8.jpg')
-deskewed_img.save('/Users/nevilvekariya/work/project/NHA/transform/img8_deskew.jpeg')
