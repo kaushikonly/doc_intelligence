@@ -209,4 +209,6 @@ class Paddle_OCR(PaddleOCR):
         font = ImageFont.load_default()
         image_array = Image.open(img_path)
 
+        #nothing
+
         return flat_result
