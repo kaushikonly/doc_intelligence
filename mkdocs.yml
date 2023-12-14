@@ -1,0 +1,12 @@
+site_name: Document Intelligence
+
+theme:
+  name: "material"
+
+nav:
+  - Get Started: main.md
+  - Document Ingelligence: index.md
+  - Document Pre-processing Methods: document_pre-processing_methods.md
+  - Document Question Answering: document_question_answering.md
+  - Table Extraction Method: table_extraction.md
+  - Reference: reference.md
