@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image
 from paddleocr import PaddleOCR
 from shapely.geometry import Polygon
+from PIL import Image, ImageDraw, ImageFont
 
 # from ml.src.utils.helper.image_process_calculations import Process_Image
 
@@ -194,3 +195,18 @@ class Paddle_OCR(PaddleOCR):
             slope_all.append(slope_mean)
 
         return angle_all, center_coord, boxcontent_center_all
+
+
+
+    def ocr_img_sud(self, img_path):
+    
+        result = self.ocr(img_path, cls=True)
+        flat_result = [item for sublist in result for item in sublist]
+        image = Image.open(img_path).convert('RGB')
+        boxes = [line[0] for line in flat_result]
+        txts = [line[1][0] for line in flat_result]
+        scores = [line[1][1] for line in flat_result]
+        font = ImageFont.load_default()
+        image_array = Image.open(img_path)
+
+        return flat_result
