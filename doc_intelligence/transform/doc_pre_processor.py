@@ -9,9 +9,9 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 # from ml.src.utils.helper.load_images import load_images_functions
-from doc_transform.model.ocr.paddleocr import Paddle_OCR
+from doc_intelligence.model.ocr.paddleocr import Paddle_OCR
 
-class Doc_Preprocessor:
+class Doc_Preprocessor():
 
     """
     
@@ -387,6 +387,19 @@ class Doc_Preprocessor:
         return X_coord, Y_coord, X_mid_all, Y_mid_all
 
 
-obj = Doc_Preprocessor()
-deskewed_img = obj.deskew_image('/Users/nevilvekariya/work/project/NHA/transform/data/deskew/img8.jpg')
-deskewed_img.save('/Users/nevilvekariya/work/project/NHA/transform/img8_deskew.jpeg')
+
+
+
+    def rotate_img(self,img_path,angle_correction):
+        
+        img = Image.open(img_path)
+        images_corrected = img.rotate(angle_correction,resample=Image.BICUBIC, expand=True)
+        images_corrected = images_corrected.convert('RGB')
+        
+        
+        return images_corrected
+
+
+#obj = Doc_Preprocessor()
+#deskewed_img = obj.deskew_image('/Users/nevilvekariya/work/project/NHA/transform/data/deskew/img8.jpg')
+#deskewed_img.save('/Users/nevilvekariya/work/project/NHA/transform/img8_deskew.jpeg')
