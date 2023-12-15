@@ -31,3 +31,17 @@ from doc_intelligence.model.qustion_answering.document_question_answering import
 doc_vqa = DocVQA()
 answers = doc_vqa.answer_questions(file_type="image", file_path="./invoice.jpg", questions=["what is total amount?", "what is invoice number?"]) 
 ```
+
+<figure markdown>
+  ![Example of Discharge Summary for DocVQA](./images/document_qa_example.webp){ width="700" }
+  <figcaption>Example of image (Discharge Summary) for DocVQA</figcaption>
+</figure>
+
+```json
+{ "prompt": "What is the name of the patient?", "result": [{ "value": "Mr.SONAIMUTHU", "prob": 1, "start": 15, "end": 17 }]}, 
+{ "prompt": "What is the date of admission?", "result": [ { "value": "21/01/2019", "prob": 1, "start": 37, "end": 41 }]},
+{ "prompt": "What is the name of the doctor?", "result": [ { "value": "DR.AnandMBBS,MD.", "prob": 0.92, "start": 54, "end": 59}]},
+{ "prompt": "What was the diagnosis?", "result": [ { "value": "LOWER OESOPHAGEAL HIATUS HERNIA", "prob": 1, "start": 62, "end": 68 }]}
+```
+
+

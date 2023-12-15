@@ -113,6 +113,18 @@ class Doc_Preprocessor:
 
     def remove_horz_verti_lines(self, image_path: str, vh_thresh : int = 200, hoiz_line: bool = True, verti_line: bool= False) -> PIL.Image:
 
+        """
+        To remove eighter horizontal or vertical (or both) lines from the document image
+
+        Args: 
+            image_path: path to the image
+            vh_thresh: threshold for the binarization, range [0, 255], default = 200
+            hoiz_line: bool flag for removing horizontal lines
+            verti_line: boolean flag for removing vertical lines 
+            
+        Returns: 
+            PIL image after removing lines
+        """
         # read image using cv2 
         image = cv2.imread(image_path)
 

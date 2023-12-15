@@ -1,5 +1,13 @@
 site_name: Document Intelligence
 
+plugins:
+  - glightbox
+  
+markdown_extensions:
+  - attr_list
+  - md_in_html
+
+
 theme:
   name: "material"
 
