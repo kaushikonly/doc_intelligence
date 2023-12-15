@@ -30,11 +30,20 @@ paddle.utils.run_check()
 
 
 
-class boundingbox_computations:
+class Boundingbox_Computations():
+
+
+    def __init__(self):
+        pass
+
 
     def euc_dist(self, point1,point2):
         dist = np.linalg.norm(point1 - point2)
         return dist 
+
+    def intersection(self,lst1, lst2):
+        lst3 = [value for value in lst1 if value in lst2]
+        return lst3
 
 
     def skew_calculate(self, bounding_box_properties):
@@ -87,10 +96,10 @@ class boundingbox_computations:
             
             p0 = np.array((box_xcoord[0], box_ycoord[0]))
             p1 = np.array((box_xcoord[1], box_ycoord[1]))
-            dist01 = euc_dist(p0,p1)
+            dist01 = self.euc_dist(p0,p1)
             p2 = np.array((box_xcoord[2], box_ycoord[2]))
             p3 = np.array((box_xcoord[3], box_ycoord[3]))
-            dist23 = euc_dist(p2,p3)
+            dist23 = self.euc_dist(p2,p3)
             dist = (dist01+dist23)/2
             box_length_all.append(dist)
     
@@ -117,11 +126,111 @@ class boundingbox_computations:
         return bounding_box_properties  
 
 
-    def extract_txt(self, bounding_boxes):
+    def inter_bounding_box_relations(self, test_location,bounding_boxes):
+
+
+        pairwise_bounding_box_relations = {}
         
-        txts = [line[1][0] for line in bounding_boxes]
-        
-        return txts
+        overlap_all = []
+        overlap_vals_all = []
+        slope_vals_all = []
+        angle_vals_all = []
+        distance_all = []
+        y_diff_all = []
+        x_diff_all = []
+        key_text_all = []
+
+        for loc in test_location:
+
+            overlap_key = []
+            overlap_vals = []
+            slope_vals = []
+            angle_vals = []
+            distance = []
+            y_diff = []
+            x_diff = []
+
+            y_min = np.min([bounding_boxes[loc][0][0][1],bounding_boxes[loc][0][1][1],bounding_boxes[loc][0][2][1],bounding_boxes[loc][0][3][1]])
+            y_max = np.max([bounding_boxes[loc][0][0][1],bounding_boxes[loc][0][1][1],bounding_boxes[loc][0][2][1],bounding_boxes[loc][0][3][1]])
+
+            x_min = np.min([bounding_boxes[loc][0][0][0],bounding_boxes[loc][0][1][0],bounding_boxes[loc][0][2][0],bounding_boxes[loc][0][3][0]])
+            x_max = np.max([bounding_boxes[loc][0][0][0],bounding_boxes[loc][0][1][0],bounding_boxes[loc][0][2][0],bounding_boxes[loc][0][3][0]])
+
+            y_avg = (y_min + y_max)/2
+            x_avg = (x_min + x_max)/2
+
+
+            for counter,f in enumerate(bounding_boxes):
+
+                #if counter != loc:
+
+                y_min_comp = np.min([bounding_boxes[counter][0][0][1],bounding_boxes[counter][0][1][1],bounding_boxes[counter][0][2][1],bounding_boxes[counter][0][3][1]])
+                y_max_comp = np.max([bounding_boxes[counter][0][0][1],bounding_boxes[counter][0][1][1],bounding_boxes[counter][0][2][1],bounding_boxes[counter][0][3][1]])
+
+                x_min_comp = np.min([bounding_boxes[counter][0][0][0],bounding_boxes[counter][0][1][0],bounding_boxes[counter][0][2][0],bounding_boxes[counter][0][3][0]])
+                x_max_comp = np.max([bounding_boxes[counter][0][0][0],bounding_boxes[counter][0][1][0],bounding_boxes[counter][0][2][0],bounding_boxes[counter][0][3][0]])
+
+
+                y_comp_avg = (y_min_comp + y_max_comp)/2
+                x_comp_avg = (x_min_comp + x_max_comp)/2
+
+                if (y_min <= y_min_comp) and (y_max >= y_max_comp): 
+                    overlap = 1
+                elif (y_min >= y_min_comp) and (y_max <= y_max_comp): 
+                    overlap = 1            
+                elif (y_min >= y_min_comp) and (y_max >= y_max_comp): 
+                    overlap =  (y_max_comp -y_min)/(y_max -y_min)
+                elif (y_min <= y_min_comp) and (y_max <= y_max_comp): 
+                    overlap =  (y_max -y_min_comp)/(y_max -y_min) 
+                else:
+                    print('No option')
+
+                slope =   np.abs((y_comp_avg - y_avg)/(x_comp_avg - x_avg))
+                angle = math.degrees(math.atan(slope))
+
+                dist = math.sqrt(((y_comp_avg-y_avg)**2)+((x_comp_avg-x_avg)**2))
+
+                ydiff = y_avg-y_comp_avg
+                xdiff = x_avg-x_comp_avg
+
+                if overlap <=0:
+                        #overlap = 0 
+                        overlap_val = 'NaN'       
+                        overlap_val = bounding_boxes[counter][1][0]
+
+
+                else:
+                        overlap_val = bounding_boxes[counter][1][0]
+
+                overlap_key.append(overlap)        
+                overlap_vals.append(overlap_val)
+                slope_vals.append(slope)
+                angle_vals.append(angle)
+                distance.append(dist)
+                y_diff.append(ydiff)
+                x_diff.append(xdiff)
+
+
+            overlap_all.append(overlap_key)            
+            overlap_vals_all.append(overlap_vals)      
+            slope_vals_all.append(slope_vals)
+            angle_vals_all.append(angle_vals)
+            distance_all.append(distance)
+            y_diff_all.append(y_diff)
+            x_diff_all.append(x_diff)
+            key_text_all.append(bounding_boxes[loc][1])
+            
+            pairwise_bounding_box_relations['overlap_percentage'] = overlap_all
+            pairwise_bounding_box_relations['text_in_box'] = overlap_vals_all
+            pairwise_bounding_box_relations['slope'] = slope_vals_all
+            pairwise_bounding_box_relations['angle'] = angle_vals_all
+            pairwise_bounding_box_relations['distance'] = distance_all
+            pairwise_bounding_box_relations['y_diff'] = y_diff_all
+            pairwise_bounding_box_relations['x_diff'] = x_diff_all
+            pairwise_bounding_box_relations['key_text'] = key_text_all
+
+        return pairwise_bounding_box_relations
+
 
 
 

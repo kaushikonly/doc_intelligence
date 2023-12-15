@@ -397,6 +397,7 @@ class Doc_Preprocessor():
         images_corrected = images_corrected.convert('RGB')
         
         
+        
         return images_corrected
 
 
