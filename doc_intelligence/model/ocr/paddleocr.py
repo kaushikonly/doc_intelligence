@@ -9,6 +9,7 @@ from PIL import Image
 from paddleocr import PaddleOCR
 from shapely.geometry import Polygon
 from PIL import Image, ImageDraw, ImageFont
+from typing import List
 
 # from ml.src.utils.helper.image_process_calculations import Process_Image
 
@@ -19,7 +20,17 @@ class Paddle_OCR(PaddleOCR):
         self.language = language
         self.ocr_model = PaddleOCR(lang=self.language)
 
-    def apply_ocr(self, img_path: str):
+    def apply_ocr(self, img_path: str) -> List:
+
+        """
+        locates text in image, and makes the text machine readable
+
+        Args:
+        img_path: Path to .jpeg file
+
+        Returns:
+        list of OCR'ed text with bounding box coordinates and confidence score
+        """
 
         result = self.ocr_model.ocr(img_path, cls=True)
         flat_result = [item for sublist in result for item in sublist]
