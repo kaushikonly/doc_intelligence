@@ -28,7 +28,8 @@ from utils.helper.text_processing import Text_Manipulation
 from utils.helper.computations import Boundingbox_Computations
 from doc_intelligence.transform.doc_pre_processor import Doc_Preprocessor
 from extract.structure import Document_structure
-
+from pandas import DataFrame
+import pandas as pd
 import yaml
 
 import argparse
@@ -42,7 +43,24 @@ class Document_Information():
         pass
 
 
-    def extract_table(self, fpath, path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml'):
+    def extract_table(self, fpath : str , path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml') -> pd.DataFrame:
+
+        """
+
+        Given an input image of a lab report, extract_table will provide a dataframe, containing the medical tests, their values and ranges as output.
+
+        Args:
+
+        fpath: Path to .jpeg of input image of lab report 
+        path_yaml: path to yaml file containing medical tests to look for
+
+
+        Returns:
+
+        dataframe containing the medical tests, their values and ranges
+
+
+        """
 
 
         with open(path_yaml, 'r') as file:
