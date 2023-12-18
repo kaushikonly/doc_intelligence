@@ -24,6 +24,7 @@ from pprint import pprint
 from paddlenlp import Taskflow
 from sklearn.model_selection import train_test_split 
 import argparse
+from typing import List
 
 paddle.utils.run_check()
 
@@ -41,12 +42,35 @@ class Boundingbox_Computations():
         dist = np.linalg.norm(point1 - point2)
         return dist 
 
-    def intersection(self,lst1, lst2):
+    def intersection(self,lst1: list, lst2: list) -> List:
+        """
+        Returns intersection of 2 lists containing numnbers
+
+        Args:
+        lst1: First list
+        lst2: Second list
+
+        Return:
+        Intersection of both lists
+
+        """
         lst3 = [value for value in lst1 if value in lst2]
         return lst3
 
 
-    def skew_calculate(self, bounding_box_properties):
+    def skew_calculate(self, bounding_box_properties: list) -> float:
+
+        """
+
+        Returns angle of skew of jpeg file
+
+        Args:
+        bounding_box_properties: List of bounding box properties such as the angle of slant for each bounding box
+
+        Returns:
+        Angle of skew of the whole document
+
+        """
         
         angle_all = bounding_box_properties['angle_all']
         box_length_all = bounding_box_properties['box_length_all']
@@ -58,7 +82,19 @@ class Boundingbox_Computations():
         return angle_correction
 
 
-    def bounding_box_property_estimator(self, bounding_boxes):
+    def bounding_box_property_estimator(self, bounding_boxes:list) -> dict:
+
+        """
+        This function calculates properties of bounding boxes such as angle of bounding box, X,Y coordinates, length of bounding boxes 
+
+        Args:
+
+        bounding_boxes: complete list of bounding boxes returned by apply_ocr
+
+        Returns:
+        dictionary of relations between bounding boxes.
+
+        """
     
 
         bounding_box_properties = {}
@@ -126,7 +162,21 @@ class Boundingbox_Computations():
         return bounding_box_properties  
 
 
-    def inter_bounding_box_relations(self, test_location,bounding_boxes):
+    def inter_bounding_box_relations(self, test_location: list,bounding_boxes: list) -> dict:
+
+
+        """
+        This function calculates relations such as slope, angle, distance, differences in x and y coordinates, overlap percentage between bounding boxes 
+
+        Args:
+
+        test_location: List of indices of bounding boxes containing relevant medical test names returned by select_subset_boundingbox
+        bounding_boxes: complete list of bounding boxes returned by apply_ocr
+
+        Returns:
+        dictionary of relations between bounding boxes.
+
+        """
 
 
         pairwise_bounding_box_relations = {}

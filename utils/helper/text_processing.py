@@ -25,6 +25,8 @@ from paddlenlp import Taskflow
 from sklearn.model_selection import train_test_split 
 import argparse
 from utils.helper.computations import Boundingbox_Computations
+from typing import List
+
 
 paddle.utils.run_check()
 
@@ -38,13 +40,37 @@ class Text_Manipulation():
     def __init__(self):
         pass
 
-    def extract_txt(self, bounding_boxes):
-        
+    def extract_txt(self, bounding_boxes: list) -> list:
+
+        """
+        Returns list of texts in bounding boxes
+
+        Args:
+        bounding_boxes: List of bounding boxes
+
+        Return:
+        Returns list of texts in bounding boxes
+
+        """
+
         txts = [line[1][0] for line in bounding_boxes]
         
         return txts
 
-    def jaro_comparison(self, txts,test_list):
+    def jaro_comparison(self, txts: list,test_list: list) -> List:
+
+        """
+        Returns list of texts in bounding boxes
+
+        Args:
+        txts: List of texts in bounding boxes
+        test_list: list of medical test names
+
+        Return:
+        Returns list of Jaro distance values
+
+        """
+
         
         Jaro_Dist_All = []
         for indiv_txt in txts:   
@@ -64,7 +90,25 @@ class Text_Manipulation():
 
 
     
-    def select_subset_boundingbox(self, bounding_boxes,test):
+    def select_subset_boundingbox(self, bounding_boxes: list,test: list) -> List:
+
+        """
+
+        Given a list of bounding boxes returned by apply_ocr and list of common medical test names, this function will do string matching
+        to find the relevant bounding boxes containing text closely matching to those provided in the test list 
+
+        Args:
+
+        bounding_boxes: List of bounding boxes 
+        test: list of medical tests
+
+        Returns:
+
+        list of indices of the bounding boxes, whose text closely matches those in test list
+
+
+
+        """
         
         textlocation = {}
         
@@ -91,7 +135,21 @@ class Text_Manipulation():
                 
         return textlocation  
 
-    def row_extraction_overlap_method(self, pairwise_bounding_box_relations,jrd_loc_all):
+    def row_extraction_overlap_method(self, pairwise_bounding_box_relations: list,jrd_loc_all:list) -> List:
+
+        """
+        Given a dictionary of interbounding box relations, row_extraction_overlap_method returns candidate rows based 
+        on degree of overlap between bounding boxes
+
+        Args: 
+        pairwise_bounding_box_relations: dictionary containing relations between bounding boxes 
+        jrd_loc_all:  list of Jaro distance values
+
+
+        Returns: 
+        list of rows
+
+        """
     
         box_overlap_percentage = pairwise_bounding_box_relations['overlap_percentage']
         text_in_box = pairwise_bounding_box_relations['text_in_box']
@@ -121,7 +179,21 @@ class Text_Manipulation():
 
 
 
-    def row_extraction_slope_method(self,pairwise_bounding_box_relations,test_list):
+    def row_extraction_slope_method(self,pairwise_bounding_box_relations:list,test_list:list) -> List:
+
+        """
+        Given a dictionary of interbounding box relations, row_extraction_slope_method returns candidate rows
+        based on slope between bounding boxes
+
+        Args: 
+        pairwise_bounding_box_relations: dictionary containing relations between bounding boxes 
+        test_list: list of medical tests
+
+
+        Returns: 
+        list of rows
+
+        """
         
         Bbox_comp = Boundingbox_Computations()
 
