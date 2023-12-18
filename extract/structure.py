@@ -28,8 +28,10 @@ from utils.helper.text_processing import Text_Manipulation
 from utils.helper.computations import Boundingbox_Computations
 from doc_intelligence.transform.doc_pre_processor import Doc_Preprocessor
 import yaml
-
+from typing import List
+import pandas as pd
 import argparse
+import PIL
 
 paddle.utils.run_check()
 
@@ -43,7 +45,19 @@ class Document_structure():
         pass
 
 
-    def crop_with_jaro(self, fpath, path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml'):
+    def crop_with_jaro(self, fpath: str , path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml') -> PIL.Image :
+
+        """
+        Given a jpeg of lab report, crop_with_jaro identifies the location of the table and crops that out and returns it as a jpeg.
+
+        Args: 
+        fpath: Path to original jpeg file
+        path_yaml: yaml containing medical test names
+
+        Returns: 
+        Path to jpeg containing only the cropped image of lab report table.
+
+        """
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -99,7 +113,20 @@ class Document_structure():
 
 
 
-    def serialize_table(self, fpath, path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml'):
+    def serialize_table(self, fpath:str, path_yaml='/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml') -> List:
+
+        """
+        Returns list of all row, column pairs in tables
+
+        Args: 
+        fpath: Path to original jpeg file
+        path_yaml: yaml containing medical test names
+
+        Returns: 
+        list of all row, column pairs in tables
+
+
+        """
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -122,7 +149,20 @@ class Document_structure():
         return serialized_table
 
 
-    def table_formation(self,key_pairs_all,path_yaml):
+    def table_formation(self,key_pairs_all: list,path_yaml: str) -> pd.DataFrame:
+
+        """
+        Function returns dataframe containing medical test names, corresponding values and low and high range.
+
+        Args: 
+        key_pairs_all: List of candidate rows returned by row_extraction_slope_method
+        path_yaml: path to yaml file containing medical test names.
+
+        Returns:
+        dataframe containing medical test names, corresponding values, low and high range
+
+
+        """
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -280,12 +320,13 @@ class Document_structure():
 ## serialize table
 
 
-#obj = Document_structure()
-#serialized_table  = obj.serialize_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/table_crop/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/doc_intelligence/test_names.yaml')
-#print(serialized_table)
+obj = Document_structure()
+serialized_table  = obj.serialize_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/table_crop/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/data/table_crop/test_names.yaml')
+print(serialized_table)
 
 #obj = Document_structure()
-#serialized_table  = obj.serialize_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/table_crop/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/doc_intelligence/test_names.yaml')
+#serialized_table  = obj.serialize_table('./data/table_crop/labreport.jpeg', './data/table_crop/test_names.yaml')
 #print(serialized_table)
 
+print('Hello')
 
