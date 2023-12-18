@@ -121,7 +121,7 @@ class Doc_Preprocessor:
             vh_thresh: threshold for the binarization, range [0, 255], default = 200
             hoiz_line: bool flag for removing horizontal lines
             verti_line: boolean flag for removing vertical lines 
-            
+
         Returns: 
             PIL image after removing lines
         """

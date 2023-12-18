@@ -60,7 +60,7 @@ shadowless_image.show()
 ```
 
 <figure markdown>
-  ![Image title](./images/deskew_example.jpg){ width="700" }
+  ![Image title](./images/shadow_remover_example.png){ width="700" }
   <figcaption>Image caption</figcaption>
 </figure>
 
@@ -92,6 +92,6 @@ image_without_hori_line.show()
 ```
 
 <figure markdown>
-  ![Image title](./images/deskew_example.jpg){ width="700" }
+  ![Image title](./images/line_remover_example.png){ width="700" }
   <figcaption>Image caption</figcaption>
 </figure>

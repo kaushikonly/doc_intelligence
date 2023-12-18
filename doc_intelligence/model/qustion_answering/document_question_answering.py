@@ -26,7 +26,7 @@ class DocVQA:
         docprompt = DocVQA(lang="en")
         docprompt.answer_questions(file_type="image", file_path="./invoice.jpg", questions=["what is total amount?", "what is invoice number?"])
 
-        docprompt({"doc": "/Users/nevilvekariya/work/project/NHA/doc_intelligence/data/document_question_answering/discharge-summary-template-18.jpg", "prompt": ["what is the name of the patient?", "what is the final dignosis?"]})
+        
         # Types of doc: A string containing a http link pointing to an image
         docprompt({"doc": "../../../data/document_question_answering/discharge-summary-template-18.jpg", "prompt": ["what is the name of the patient?", "what is the final dignosis?"]})
         '''
