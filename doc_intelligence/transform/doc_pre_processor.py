@@ -391,6 +391,19 @@ class Doc_Preprocessor():
 
 
     def rotate_img(self,img_path,angle_correction):
+
+        """
+
+        Returns deskewd image
+
+        Args:
+        Path to skewed image and skew of document, which is estimated by skew_calculate
+
+        Returns:
+        Deskewed image
+
+
+        """
         
         img = Image.open(img_path)
         images_corrected = img.rotate(angle_correction,resample=Image.BICUBIC, expand=True)
