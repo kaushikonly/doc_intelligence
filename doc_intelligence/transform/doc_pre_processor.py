@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from doc_intelligence.model.ocr.paddleocr import Paddle_OCR
 
-class Doc_Preprocessor:
+class Doc_Preprocessor():
 
     """
     Containts the following document processing techniqes, 
@@ -299,3 +299,47 @@ class Doc_Preprocessor:
         im_top.show()
 
         return img, full_filepath, im_top, full_filepath_top
+    
+    def segmentation(self, center_coord):
+        X_diff = []
+        Y_diff = []
+        X_coord = []
+        Y_coord = []
+        X_mid_all = []
+        Y_mid_all = []
+
+        for i, box_coordi in enumerate(center_coord):
+            X_mid_all.append(np.squeeze(box_coordi)[0])
+            Y_mid_all.append(np.squeeze(box_coordi)[1])
+
+            if i == 0:
+                store_prev = np.squeeze(box_coordi)
+            else:
+                x_diff = np.squeeze(box_coordi)[0] - store_prev[0]
+                y_diff = np.squeeze(box_coordi)[1] - store_prev[1]
+
+                X_diff.append(x_diff)
+                Y_diff.append(y_diff)
+                X_coord.append(np.squeeze(box_coordi)[0])
+                Y_coord.append(np.squeeze(box_coordi)[1])
+
+                store_prev = np.squeeze(box_coordi)
+
+        return X_coord, Y_coord, X_mid_all, Y_mid_all
+
+    def rotate_img(self,img_path,angle_correction):
+
+        """
+        Returns deskewd image
+
+        Args:
+        Path to skewed image and skew of document, which is estimated by skew_calculate
+
+        Returns:
+        Deskewed image
+        """   
+        img = Image.open(img_path)
+        images_corrected = img.rotate(angle_correction,resample=Image.BICUBIC, expand=True)
+        images_corrected = images_corrected.convert('RGB')
+          
+        return images_corrected

@@ -10,6 +10,8 @@ from PIL import Image
 from paddleocr import PaddleOCR
 from typing import Any, Dict, List, Tuple
 from shapely.geometry import Polygon
+from PIL import Image, ImageDraw, ImageFont
+from typing import List
 
 
 class Paddle_OCR(PaddleOCR):
