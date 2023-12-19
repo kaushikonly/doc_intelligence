@@ -70,7 +70,8 @@ class Doc_Preprocessor():
             Deskewed PIL image
         
         """
-
+        assert isinstance(image_path, [str, PIL.Image]); raise "Given File format is not allowed. "
+        
         image = Image.open(image_path).convert('RGB')
         flat_results = self.paddleocr_model.apply_ocr(image_path)
 

@@ -17,5 +17,6 @@ nav:
   - Document Optical Character Recognition (OCR): document_ocr.md 
   - Document Pre-processing Methods: document_pre-processing_methods.md
   - Document Question Answering: document_question_answering.md
-  - Table Extraction Method: table_extraction.md
+  - Extraction Methods - Information: table_extraction_information.md
+  - Extraction Methods - Structure: table_extraction_structure.md
   - Reference: reference.md
