@@ -19,9 +19,9 @@ from IPython.display import HTML
 import math
 import re
 from collections import Counter
-import jellyfish
+import jellyfish 
 from pprint import pprint
-from paddlenlp import Taskflow
+#from paddlenlp import Taskflow
 from sklearn.model_selection import train_test_split 
 import argparse
 from utils.helper.computations import Boundingbox_Computations
@@ -82,7 +82,7 @@ class Text_Manipulation():
 
                     indiv_txt = indiv_txt.lower()
                     indiv_test = indiv_test.lower()
-                    jaro_dist = jellyfish.jaro_distance(indiv_txt, indiv_test)
+                    jaro_dist = jellyfish.jaro_similarity(indiv_txt, indiv_test)
                     Jaro_Dist.append(jaro_dist)
             Jaro_Dist_All.append(np.max(Jaro_Dist))
             
@@ -121,7 +121,7 @@ class Text_Manipulation():
             jrd_max = -1
 
             for i,t in enumerate(test):
-                jrd = jellyfish.jaro_distance(t.lower(),text_in_box.lower())
+                jrd = jellyfish.jaro_similarity(t.lower(),text_in_box.lower())
                 if jrd > jrd_max:
                     jrd_max = jrd
                     loc = i 
@@ -242,7 +242,7 @@ class Text_Manipulation():
 
                 for t_spec in test_list:
                     
-                        jaro_spec = jellyfish.jaro_distance(txt_temp.lower(),t_spec.lower())
+                        jaro_spec = jellyfish.jaro_similarity(txt_temp.lower(),t_spec.lower())
                         jaro_spec_all.append(jaro_spec)
 
                 if np.max(jaro_spec_all)<0.8:       

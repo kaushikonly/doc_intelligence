@@ -43,11 +43,27 @@ class Paddle_OCR(PaddleOCR):
         
         """
         result = self.ocr_model.ocr(img_path, cls=True)
-        flat_result = [item for sublist in result for item in sublist]
 
-        self.boxes = [line[0] for line in flat_result]
-        self.texts = [line[1][0] for line in flat_result]
-        self.scores = [line[1][1] for line in flat_result]
+        try :
+       
+            flat_result = [item for sublist in result for item in sublist]
+
+            self.boxes = [line[0] for line in flat_result]
+            self.texts = [line[1][0] for line in flat_result]
+            self.scores = [line[1][1] for line in flat_result]
+
+            
+
+        except:
+
+            flat_result = [item for sublist in result for item in sublist]
+
+            self.boxes = [line[0] for line in result]
+            self.texts = [line[1][0] for line in result]
+            self.scores = [line[1][1] for line in result]
+
+
+            flat_result = result 
 
         return flat_result
 

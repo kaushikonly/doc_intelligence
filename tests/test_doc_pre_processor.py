@@ -1,6 +1,8 @@
 import random
 from PIL import Image
 from doc_intelligence.transform import doc_pre_processor as dp
+import numpy as np
+from extract.structure import Document_structure
 
 # get instance
 dp_obj = dp.Doc_Preprocessor()

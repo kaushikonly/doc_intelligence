@@ -21,7 +21,7 @@ import re
 from collections import Counter
 import jellyfish
 from pprint import pprint
-from paddlenlp import Taskflow
+#from paddlenlp import Taskflow
 from sklearn.model_selection import train_test_split 
 import argparse
 from typing import List
