@@ -1,40 +1,41 @@
-import paddle
-from paddleocr import PaddleOCR,draw_ocr
-import cv2
-import os
-from PIL import Image, ImageDraw, ImageFont
 import array
-import numpy as np
+import argparse
+import cv2
 import math
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from img2table.document import PDF, Image as Imagedocument
-from img2table.ocr import TesseractOCR
-from PIL import Image as PILImage
-import pandas as pd
-import math as mathz
+import os
+import re
+import yaml
+import yaml
+from collections import Counter
 from difflib import SequenceMatcher
 from IPython.display import HTML
-import math
-import re
-from collections import Counter
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import pandas as pd
+import PIL
+from PIL import Image, ImageDraw, ImageFont
+import paddle
+#from paddlenlp import Taskflow
+from paddleocr import PaddleOCR, draw_ocr
 import jellyfish
 from pprint import pprint
-#from paddlenlp import Taskflow
-from sklearn.model_selection import train_test_split 
-from doc_intelligence.model.ocr.paddleocr import Paddle_OCR 
-#from doc_transform.model.ocr.paddleocr import Paddle_OCR
-from utils.helper.text_processing import Text_Manipulation
-from utils.helper.computations import Boundingbox_Computations
-from doc_intelligence.transform.doc_pre_processor import Doc_Preprocessor
-import yaml
+from sklearn.model_selection import train_test_split
+import numpy as np
 from typing import List
-import pandas as pd
-import argparse
-import PIL
+from doc_intelligence.model.ocr.paddleocr import Paddle_OCR
+#from doc_transform.model.ocr.paddleocr import Paddle_OCR
+from doc_intelligence.transform.doc_pre_processor import Doc_Preprocessor
+from img2table.document import PDF, Image as Imagedocument
+from img2table.ocr import TesseractOCR
+
 from utils.helper.checks import Checks
+from utils.helper.computations import Boundingbox_Computations
+from utils.helper.text_processing import Text_Manipulation
+import sys,os 
+sys.path.append(os.path.realpath('..'))
 
 paddle.utils.run_check()
+checks = Checks()
 
 
 
@@ -46,7 +47,7 @@ class Document_structure():
         pass
 
 
-    def crop_with_jaro(self, fpath: str , path_yaml='/Users/sudarshansekhar/work/doc_intelligence/data/lab_report/test_names.yaml') -> PIL.Image :
+    def crop_with_jaro(self, fpath: str , path_yaml='./data/lab_report/test_names.yaml') -> PIL.Image :
 
         """
         Given a jpeg of lab report, crop_with_jaro identifies the location of the table and crops that out and returns it as a jpeg.
@@ -61,10 +62,8 @@ class Document_structure():
         """
 
 
-        ch_obj = Checks()
+        checks.is_valid_image_file_path(fpath)
 
-        ch_obj.is_input_yaml(path_yaml)
-        ch_obj.is_input_image(fpath)
 
         # if not(TorF):
         #     return "Not valid yaml file"
@@ -134,7 +133,7 @@ class Document_structure():
 
 
 
-    def serialize_table(self, fpath:str, path_yaml='/Users/sudarshansekhar/work/doc_intelligence/data/lab_report/test_names.yaml') -> List:
+    def serialize_table(self, fpath:str, path_yaml='./data/lab_report/test_names.yaml') -> List:
 
         """
         Returns list of all row, column pairs in tables
@@ -149,9 +148,9 @@ class Document_structure():
 
         """
 
-        # UT = Unit_Test()
-        # UT.is_input_image(fpath)
-        # UT.is_input_yaml(path_yaml)
+
+        checks.is_valid_image_file_path(fpath)
+        checks.is_valid_yaml_file_path(path_yaml)
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -165,10 +164,10 @@ class Document_structure():
 
         im_bottom, im_top = self.crop_with_jaro(fpath, path_yaml)
 
-        im_bottom.save('/Users/sudarshansekhar/work/doc_intelligence/data/crop_with_jaro/bottom.jpg')
-        im_top.save('/Users/sudarshansekhar/work/doc_intelligence/data/crop_with_jaro/top.jpg')
+        im_bottom.save('./data/crop_with_jaro/bottom.jpg')
+        im_top.save('./data/crop_with_jaro/top.jpg')
 
-        bounding_boxes = OCR_model.apply_ocr('/Users/sudarshansekhar/work/doc_intelligence/data/crop_with_jaro/bottom.jpg') 
+        bounding_boxes = OCR_model.apply_ocr('./data/crop_with_jaro/bottom.jpg') 
         test_location = Text_manip.select_subset_boundingbox(bounding_boxes,test_list)
         pairwise_bounding_box_relations = Bounding_box_comp.inter_bounding_box_relations(test_location['jaro_matching'],bounding_boxes)
         serialized_table = Text_manip.row_extraction_overlap_method(pairwise_bounding_box_relations,test_location['jaro_matching'])
@@ -194,9 +193,8 @@ class Document_structure():
 
         """
 
-        # UT = Unit_Test()
-        # UT.is_input_list(key_pairs_all)
-        # UT.is_input_yaml(path_yaml)
+        checks.is_valid_yaml_file_path(path_yaml)
+
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -338,38 +336,8 @@ class Document_structure():
                        print('Nothing')
                        print(temp)         
         
-        UT.is_df_empty(d)
 
 
         return d    
 
-
-
-
-## crop with jaro
-
-#obj = Document_structure()
-#im_bottom, im_top  = obj.crop_with_jaro('/Users/sudarshansekhar/work/doc_intelligence/data/lab_report/LabReport.jpeg', '/Users/sudarshansekhar/work/doc_intelligence/data/lab_report/test_names.yaml')
-#im_bottom.save('/Users/sudarshansekhar/work/doc_intelligence/data/crop_with_jaro/bottom.jpg')
-#im_top.save('/Users/sudarshansekhar/work/doc_intelligence/data/crop_with_jaro/top.jpg')
-
-## serialize table
-
-#TODO change to relative path
-obj = Document_structure()
-serialized_table  = obj.serialize_table('/Users/sudarshansekhar/work/doc_intelligence/data/lab_report/LabReport.jpeg', '/Users/sudarshansekhar/work/doc_intelligence/doc_intelligence/test_names.yaml')
-print(serialized_table)
-
-#obj = Document_structure()
-#serialized_table  = obj.serialize_table('./data/table_crop/labreport.jpeg', './data/table_crop/test_names.yaml')
-#print(serialized_table)
-
-
-#obj = Document_structure()
-#serialized_table  = obj.serialize_table('../data/lab_report/LabReport.jpeg', '/Users/sudarshansekhar/work/doc_intelligence/doc_intelligence/test_names.yaml')
-#print(serialized_table)
-
-#print('Hello')
-
-#/Users/sudarshansekhar/work/doc_intelligence/extract/structure.py
 
