@@ -65,9 +65,9 @@ shadowless_image.show()
 </figure>
 
 
-### Method 3: `remove_horz_verti_lines`
+### Method 3: `line_remover`
 
-#### `remove_horz_verti_lines(self, image_path: str, vh_thresh : int = 200, hoiz_line: bool = True, verti_line: bool= False) -> PIL.Image:`
+#### `line_remover(self, image_path: str, vh_thresh : int = 200, hori_line: bool = True, verti_line: bool= False) -> PIL.Image:`
 
 Remove the shadow from the document image.
 
@@ -75,7 +75,7 @@ Remove the shadow from the document image.
 
     - `image_path`: path to the image
     - `vh_thresh`: threshold for the binarization, range [0, 255], default = 200
-    - `hoiz_line`: boolean flag for removing horizontal lines
+    - `hori_line`: boolean flag for removing horizontal lines
     - `verti_line`: boolean flag for removing vertical lines 
 
 #### Returns:
@@ -87,7 +87,7 @@ Remove the shadow from the document image.
 from doc_intelligence.transform import doc_pre_processor as dp
 
 doc_processor = dp.Doc_Preprocessor()
-image_without_hori_line = doc_processor.remove_horz_verti_lines("./path/to/image.jpg", hoiz_line=True)
+image_without_hori_line = doc_processor.line_remover("./path/to/image.jpg", hoiz_line=True)
 image_without_hori_line.show()
 ```
 

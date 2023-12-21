@@ -9,6 +9,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+from utils.helper import checks
 from doc_intelligence.model.ocr.paddleocr import Paddle_OCR
 
 class Doc_Preprocessor():
@@ -70,7 +71,7 @@ class Doc_Preprocessor():
             Deskewed PIL image
         
         """
-        assert isinstance(image_path, [str, PIL.Image]); raise "Given File format is not allowed. "
+        checks.is_valid_image_file_path(image_path)
         
         image = Image.open(image_path).convert('RGB')
         flat_results = self.paddleocr_model.apply_ocr(image_path)
@@ -91,6 +92,7 @@ class Doc_Preprocessor():
         Returns: 
             Pil image after removing the shadow from the document image
         """
+        checks.is_valid_image_file_path(image_path)
         rgb_planes = cv2.split(cv2.imread(image_path))
 
         result_norm_planes = []
@@ -112,7 +114,7 @@ class Doc_Preprocessor():
         color_converted = cv2.cvtColor(img_shadow_removed, cv2.COLOR_BGR2RGB)
         return Image.fromarray(color_converted)
 
-    def remove_horz_verti_lines(self, image_path: str, vh_thresh : int = 200, hoiz_line: bool = True, verti_line: bool= False) -> PIL.Image:
+    def line_remover(self, image_path: str, vh_thresh : int = 200, hori_line: bool = True, verti_line: bool= False) -> PIL.Image:
 
         """
         To remove eighter horizontal or vertical (or both) lines from the document image
@@ -120,12 +122,17 @@ class Doc_Preprocessor():
         Args: 
             image_path: path to the image
             vh_thresh: threshold for the binarization, range [0, 255], default = 200
-            hoiz_line: bool flag for removing horizontal lines
+            hori_line: bool flag for removing horizontal lines
             verti_line: boolean flag for removing vertical lines 
 
         Returns: 
             PIL image after removing lines
         """
+        checks.is_valid_image_file_path(image_path)
+
+        if hori_line==False and verti_line==False: 
+            raise ValueError("Both parameter can't be False.")
+
         # read image using cv2 
         image = cv2.imread(image_path)
 
@@ -140,7 +147,7 @@ class Doc_Preprocessor():
             gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, -2
         )
 
-        if hoiz_line:
+        if hori_line:
             horizontal = np.copy(bw)
 
             cols = horizontal.shape[1]
@@ -177,7 +184,7 @@ class Doc_Preprocessor():
         shadowless_vh[shadowless_vh <= vh_thresh] = 0
         shadowless_vh_inv = np.invert(shadowless_vh)
 
-        shadowless_vhless_inv = shadowless_vh_inv - horizontal if hoiz_line else shadowless_vh_inv
+        shadowless_vhless_inv = shadowless_vh_inv - horizontal if hori_line else shadowless_vh_inv
         shadowless_vhless_inv = shadowless_vh_inv - vertical if verti_line else shadowless_vh_inv
         shadowless_vhless_pil = Image.fromarray(np.invert(shadowless_vhless_inv))
 

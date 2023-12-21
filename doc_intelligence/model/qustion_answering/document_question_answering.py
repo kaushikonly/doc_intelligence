@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import fitz
 from paddlenlp import Taskflow
-from common.utils import files
+from utils.helper import files, checks
 
 
 class DocVQA:
@@ -41,14 +41,20 @@ class DocVQA:
             List of dicts where each elements contains original promot and the answer of the given prompt
             example - [{"prompt" : "your prompt", "result", [{"value" : "answer", "prob" : 0.9, "start": 23, "end": 42}]}]
         """
+
         if file_type == "image":
+            checks.is_valid_image_file_path(file_path)
             query = {"doc": file_path, "prompt": questions}
             answers = self.__docprompt([query])
 
-        if file_type == "pdf":
+        elif file_type == "pdf":
+            checks.is_valid_pdf_file_path(file_path)
             answers = self.__extract_answers_from_pdf_pages(
-                file_path, questions
-            )
+                file_path, questions)
+
+        else: 
+            print("asdasdas")
+            raise ValueError("File type '{}' is not valid. Allowed file types - [image, pdf]".format(file_type))
 
         return answers
 
