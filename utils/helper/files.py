@@ -54,6 +54,8 @@ def get_file_info(filename: str) -> Tuple[str, str, Optional[str]]:
         if file_extension == ".pdf"
         else "image"
         if file_extension in ALLOWED_EXTENSIONS
+        else "yaml"
+        if file_extension == ".yaml" or file_extension == ".yml"
         else None
     )
     return base_name, file_extension, file_type

@@ -31,7 +31,7 @@ from extract.structure import Document_structure
 from pandas import DataFrame
 import pandas as pd
 import yaml
-
+from utils.helper import checks
 import argparse
 
 paddle.utils.run_check()
@@ -61,7 +61,8 @@ class Document_Information():
 
 
         """
-
+        checks.is_valid_image_file_path(fpath)
+        checks.is_valid_yaml_file_path(path_yaml)
 
         with open(path_yaml, 'r') as file:
             tests = yaml.safe_load(file)
@@ -89,18 +90,13 @@ class Document_Information():
 
         return d
 
-
-
-
-
 #obj = Document_Information()
 #d = obj.extract_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml')
 #print(d)
 
-
-obj = Document_Information()
-d = obj.extract_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml')
-print(d)
+# obj = Document_Information()
+# d = obj.extract_table('/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/labreport.jpeg', '/home/nhadmin/users/sudarshan/doc_intelligence/data/lab_report/test_names.yaml')
+# print(d)
 
 
 #im_bottom.save('/home/nhadmin/users/sudarshan/doc_intelligence/data/table_crop/bottom/bottom.jpg')
