@@ -29,7 +29,7 @@ from doc_intelligence.model.qustion_answering.document_question_answering import
 
 # get instance
 doc_vqa = DocVQA()
-answers = doc_vqa.answer_questions(file_type="image", file_path="./invoice.jpg", questions=["what is total amount?", "what is invoice number?"]) 
+answers = doc_vqa.answer_questions(file_type="image", file_path="./docs/images/document_qa_example.webp", questions=["what is the name of the patient?", "What is the date of admission?", "What is the name of the doctor?", "What was the diagnosis?"]) 
 ```
 
 <figure markdown>
