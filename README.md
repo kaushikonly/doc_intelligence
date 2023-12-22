@@ -84,6 +84,35 @@ shadowless_image.show()
 
 - Facilitates the extraction of tables from documents, enabling structured data retrieval.
 
+``` python
+
+from extract.information import Document_Information
+
+# get instance
+obj = Document_Information()
+table_df = obj.extract_table('./data/lab_report/LabReport.jpg', './data/lab_report/test_names.yaml')
+table_df.show()
+```
+
+![Example for Document Question Answering](./docs/images/table_extraction_example.png)
+
+### Crop With Jaro
+
+- Crop the lab reports into two parts header and the table. 
+
+``` python
+
+from extract.structure import Document_structure
+
+obj = Document_structure()
+im_bottom, im_top  = obj.crop_with_jaro('./data/lab_report/LabReport.jpg', './data/lab_report/test_names.yaml')
+im_bottom.save('./data/crop_with_jaro/bottom.jpg')
+im_top.save('./data/crop_with_jaro/top.jpg')
+
+```
+
+![Example for Document Question Answering](./docs/images/crop_with_jaro_example.png)
+
 ### Document Question Answering
 
 - Utilizes a powerful question-answering model to extract relevant information from documents based on queries.
