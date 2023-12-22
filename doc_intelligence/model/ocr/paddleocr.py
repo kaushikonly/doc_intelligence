@@ -49,6 +49,7 @@ class Paddle_OCR(PaddleOCR):
         self.texts = [line[1][0] for line in flat_result]
         self.scores = [line[1][1] for line in flat_result]
 
+        if len(flat_result) == 0: raise ValueError("Document doesn't contain any text")
         return flat_result
 
     def draw_multiple_boxes(self, image_path : str, ind_list: list) -> PIL.Image:
@@ -87,4 +88,5 @@ class Paddle_OCR(PaddleOCR):
         boxes = [line[0] for line in flat_result]
         image_array = Image.open(img_path)
 
+        if len(flat_result) == 0: raise ValueError("Document doesn't contain any text")
         return image, flat_result, image_array
