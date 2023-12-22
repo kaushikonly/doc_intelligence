@@ -1,0 +1,36 @@
+# Model Training Configuration
+
+experiment_name: resnet50_v1.0
+checkpoint_path: /data/user/nevil/document_classification/checkpoints
+
+model:
+  name: resnet18
+  activation: softmax
+  parallel_training: True
+
+train:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: adam
+  loss_function: CrossEntropyLoss
+  shuffle: True
+  metrics:
+    - accuracy
+
+test: 
+  batch_size: 32
+  shuffle: True
+
+data:
+  path: /data/user/nevil/document_classification/dataset
+  data_version: v4
+  preprocessing:
+    - type: normalization
+    - type: augmentation
+      params:
+        rotation_range: 10
+        width_shift_range: 0.1
+        height_shift_range: 0.1
+        horizontal_flip: true
